@@ -8,5 +8,5 @@ mongoose.connect(process.env.DB_URI, {
 
 const db = mongoose.connection;
 
-db.on("error", () => "Database conection failed");
-db.once("open", () => "Database connected");
+db.on("error", () => console.log("Database conection failed"));
+db.once("open", () => console.log("Database connected"));

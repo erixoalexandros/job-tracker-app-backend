@@ -1,57 +1,75 @@
 const Job = require("../models/job");
 const jobsController = {};
+const { filterTrueProperties } = require("../helpers");
 
-jobsController.getJobList = (req, res) => {
-  res.send("job list");
-};
+///////////////////////////////////////////////////////////////////
+// GET JOB LIST ///////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
 
-jobsController.getJob = (req, res) => {
-  res.send("job selected");
-};
-
-jobsController.createJob = async (req, res) => {
-  const {
-    user,
-    company,
-    position,
-    salary,
-    salaryRate,
-    location,
-    contactName,
-    contact,
-    description,
-    status,
-    notes
-  } = req.body;
-
-  const newJob = new Job({
-    user,
-    company,
-    position,
-    salary,
-    salaryRate,
-    location,
-    contactName,
-    contact,
-    description,
-    status,
-    notes
-  });
-
+jobsController.getJobList = async (req, res) => {
+  const jobs = await Job.find();
   try {
-    await newJob.save();
+    res.json(jobs);
   } catch (error) {
     res.status(400).send(error.message);
   }
-  res.send("Job Created");
 };
 
-jobsController.updateJob = (req, res) => {
-  res.send("job updated");
+///////////////////////////////////////////////////////////////////
+// GET SINGLE JOB /////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+jobsController.getJob = async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    res.json(job);
+  } catch (error) {
+    res.status(404).send("Job not found.");
+  }
 };
 
-jobsController.deleteJob = (req, res) => {
-  res.send("job deleted");
+///////////////////////////////////////////////////////////////////
+// CREATE JOB /////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+jobsController.createJob = async (req, res) => {
+  const newJob = new Job({ ...filterTrueProperties(req.body) });
+
+  try {
+    res.json(await newJob.save());
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+///////////////////////////////////////////////////////////////////
+// UPDATE JOB /////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+jobsController.updateJob = async (req, res) => {
+  try {
+    const updatedJob = await Job.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: { ...filterTrueProperties(req.body) }
+      },
+      {
+        new: true
+      }
+    );
+    res.json(updatedJob);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+///////////////////////////////////////////////////////////////////
+// DELETE JOB /////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+jobsController.deleteJob = async (req, res) => {
+  await Job.findByIdAndDelete(req.params.id);
+  res.send("Job deleted");
 };
 
 module.exports = jobsController;

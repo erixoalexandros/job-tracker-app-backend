@@ -24,7 +24,12 @@ const Job = mongoose.model("Job", {
   salary: {
     type: Number
   },
-  salaryRate: String,
+  salaryRate: {
+    type: String,
+    required: function() {
+      return this.salary > 0;
+    }
+  },
   location: String,
   contactName: String,
   contact: {
