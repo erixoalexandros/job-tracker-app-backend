@@ -1,11 +1,18 @@
 const { Router } = require("express");
 const router = Router();
-const jobsController = require("../controllers/jobs");
+const {
+  getJobsList,
+  getJob,
+  createJob,
+  updateJob,
+  deleteJob
+} = require("../controllers/jobs");
+const checkAuthToken = require("../middlewares/checkAuthToken");
 
-router.get("/", jobsController.getJobList);
-router.get("/:id", jobsController.getJob);
-router.post("/", jobsController.createJob);
-router.put("/:id", jobsController.updateJob);
-router.delete("/:id", jobsController.deleteJob);
+router.get("/", checkAuthToken, getJobsList);
+router.get("/:id", checkAuthToken, getJob);
+router.post("/", checkAuthToken, createJob);
+router.put("/:id", checkAuthToken, updateJob);
+router.delete("/:id", checkAuthToken, deleteJob);
 
 module.exports = router;

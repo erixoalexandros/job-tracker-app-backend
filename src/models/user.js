@@ -18,7 +18,7 @@ const userSchema = new Schema({
   }
 });
 
-userSchema.methods.generateToken = function() {
+userSchema.methods.generateAuthToken = function() {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY);
 };
 
